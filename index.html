@@ -82,7 +82,13 @@
     ].join('');
 
     const blob = new Blob([portalHtml], { type: "text/html" });
-    const win = window.open(URL.createObjectURL(blob), "_blank");
+    const win = const blob = new Blob([portalHtml], { type: "text/html" });
+const win = window.open(
+  URL.createObjectURL(blob),
+  "_blank",
+  "width=900,height=650,menubar=no,toolbar=no,location=no,status=no"
+);
+(URL.createObjectURL(blob), "_blank");
     if (!win) {
       alert("Allow pop-ups in your browser bar to open the page!");
       launched = false;
