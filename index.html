@@ -9,7 +9,7 @@
       width: 100%;
       height: 100%;
       background: #ffffff;
-      cursor: default;
+      overflow: hidden;
     }
   </style>
 </head>
@@ -22,74 +22,16 @@
     if (launched) return;
     launched = true;
 
-    const menuHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Dashboard</title>
-        <style>
-          body { font-family: sans-serif; background: #111; color: #fff; margin: 0; padding: 20px; }
-          #hub { max-width: 900px; margin: 0 auto; }
-          input { width: 100%; padding: 12px; margin-bottom: 16px; border-radius: 6px; border: none; font-size: 16px; box-sizing: border-box; }
-          #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
-          button { padding: 12px; background: #222; color: #fff; border: 1px solid #333; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
-          button:hover { background: #333; }
-          iframe { width: 100%; aspect-ratio: 16 / 9; border: none; border-radius: 8px; margin-bottom: 10px; background: #000; display: none; }
-          #fs-btn { display: none; width: 100%; margin-bottom: 16px; background: #0066cc; border: none; font-size: 14px; }
-        </style>
-      </head>
-      <body>
-        <div id="hub">
-          <iframe id="frame" allow="autoplay; keyboard; gamepad; fullscreen"></iframe>
-          <button id="fs-btn" onclick="document.getElementById('frame').requestFullscreen()">FULLSCREEN GAME</button>
-          <input type="text" id="search" placeholder="Loading games..." onkeyup="filter()">
-          <div id="grid"></div>
-        </div>
-        <script>
-          const grid = document.getElementById("grid");
-          const frame = document.getElementById("frame");
-          const fsBtn = document.getElementById("fs-btn");
-          const searchInput = document.getElementById("search");
-          const htmlBase = "https://jsdelivr.net";
-          let allGames = [];
+    const pageHtml = [
+      '<!DOCTYPE html>',
+      '<html><head><title>Dashboard<\/title>',
+      '<style>html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden;}iframe{width:100%;height:100%;border:none;}<\/style>',
+      '<\/head><body>',
+      '<iframe src="https://gn-math.dev" allow="autoplay; keyboard; gamepad; fullscreen"><\/iframe>',
+      '<\/body><\/html>'
+    ].join('');
 
-          fetch("https://jsdelivr.net" + Date.now())
-            .then(res => res.json())
-            .then(data => {
-              allGames = data.filter(g => g.url && !g.url.includes("discord"));
-              searchInput.placeholder = "Search " + allGames.length + " games...";
-              render(allGames);
-            })
-            .catch(() => {
-              searchInput.placeholder = "Failed to load game list. Check network.";
-            });
-
-          function render(list) {
-            grid.innerHTML = "";
-            list.forEach(game => {
-              const b = document.createElement("button");
-              b.textContent = game.name.toUpperCase();
-              b.onclick = () => {
-                frame.style.display = "block";
-                fsBtn.style.display = "block";
-                const realUrl = game.url.replace("{HTML_URL}", htmlBase).replace("{COVER_URL}", "");
-                frame.src = realUrl;
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              };
-              grid.appendChild(b);
-            });
-          }
-
-          function filter() {
-            const q = searchInput.value.toLowerCase();
-            render(allGames.filter(g => g.name.toLowerCase().includes(q)));
-          }
-        <\/script>
-      </body>
-      </html>
-    `;
-
-    const blob = new Blob([menuHtml], { type: "text/html" });
+    const blob = new Blob([pageHtml], { type: "text/html" });
     const win = window.open(URL.createObjectURL(blob), "_blank");
     if (!win) {
       alert("Allow pop-ups in your browser bar to open the page!");
