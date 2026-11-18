@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>New Tab</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+
+<script>
+  let launched = false;
+
+  document.addEventListener("click", function() {
+    if (launched) return;
+    launched = true;
+
+    const menuHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Dashboard</title>
+        <style>
+          body { font-family: sans-serif; background: #111; color: #fff; margin: 0; padding: 20px; }
+          #hub { max-width: 900px; margin: 0 auto; }
+          input { width: 100%; padding: 12px; margin-bottom: 16px; border-radius: 6px; border: none; font-size: 16px; box-sizing: border-box; }
+          #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+          button { padding: 12px; background: #222; color: #fff; border: 1px solid #333; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
+          button:hover { background: #333; }
+          iframe { width: 100%; aspect-ratio: 16 / 9; border: none; border-radius: 8px; margin-bottom: 10px; background: #000; display: none; }
+          #fs-btn { display: none; width: 100%; margin-bottom: 16px; background: #0066cc; border: none; font-size: 14px; }
+        </style>
+      </head>
+      <body>
+        <div id="hub">
+          <iframe id="frame" allow="autoplay; keyboard; gamepad; fullscreen"></iframe>
+          <button id="fs-btn" onclick="document.getElementById('frame').requestFullscreen()">FULLSCREEN GAME</button>
+          <input type="text" id="search" placeholder="Search 200+ games..." onkeyup="filter()">
+          <div id="grid"></div>
+        </div>
+        <script>
+          const slugs = [
+            "drive-mad", "geometry-dash", "buckshot-roulette", "stick-war-legacy", "crazy-cattle-3d",
+            "ovo", "ovo-2", "ovo-dimensions", "slope", "slope-2",
+            "slope-3", "1v1-lol", "retro-bowl", "retro-bowl-college", "bitlife",
+            "minecraft-1-5-2", "minecraft-1-8-8", "minecraft-1-12-2", "terraria", "hollow-knight",
+            "undertale", "deltarune", "cuphead", "ultrakill", "people-playground",
+            "webfishing", "speedstars", "karlson", "milkman-karlson", "bad-time-simulator",
+            "fnaf-1", "fnaf-2", "fnaf-3", "fnaf-4", "fnaf-sister-location",
+            "fnaf-pizzeria-simulator", "fnaf-ucn", "fnaf-world", "baldis-basics", "baldis-basics-plus",
+            "bendy-and-the-ink-machine", "amanda-the-adventurer", "thats-not-my-neighbor", "bad-parenting", "class-of-09",
+            "doki-doki-literature-club", "granny", "granny-2", "granny-3", "backrooms",
+            "slender", "eyes-the-horror-game", "poppy-playtime", "garten-of-banban",
+            "half-life", "quake-3", "doom", "doom-2", "wolfenstein-3d",
+            "superhot", "time-shooter-2", "time-shooter-3", "funny-shooter-2", "pixel-gun-3d",
+            "krunker", "shell-shockers", "getaway-shootout", "rooftop-snipers", "rooftop-snipers-2",
+            "tube-jumpers", "gun-mayhem", "gun-mayhem-2", "gun-mayhem-redux", "strike-force-heroes",
+            "strike-force-heroes-2", "strike-force-heroes-3", "raze", "raze-2", "raze-3",
+            "hill-climb-racing", "hill-climb-racing-2", "moto-x3m", "moto-x3m-2", "moto-x3m-3",
+            "moto-x3m-winter", "moto-x3m-pool-party", "moto-x3m-spooky-land", "drift-hunters", "drift-boss",
+            "madalin-stunt-cars-2", "madalin-stunt-cars-3", "polytrack", "egg-car", "earn-to-die",
+            "earn-to-die-2", "earn-to-die-2012", "jelly-truck", "happy-wheels", "cluster-rush",
+            "subway-surfers", "temple-run-2", "crossy-road", "jetpack-joyride", "fruit-ninja",
+            "angry-birds", "angry-birds-rio", "angry-birds-space", "bad-piggies", "cut-the-rope",
+            "cut-the-rope-time-travel", "doodle-jump", "flappy-bird", "flappy-dunk", "magic-tiles-3",
+            "geometry-dash-lite", "geometry-dash-subzero", "geometry-dash-meltdown", "geometry-dash-world", "worlds-hardest-game",
+            "worlds-hardest-game-2", "worlds-hardest-game-3", "tomb-of-the-mask", "paper-io-2", "hole-io",
+            "plants-vs-zombies", "bloons-td", "bloons-td-2", "bloons-td-3", "bloons-td-4",
+            "bloons-td-5", "bloons-td-6", "bloons-td-battles", "kingdom-rush", "kingdom-rush-frontiers",
+            "kingdom-rush-origins", "age-of-war", "age-of-war-2", "stick-war", "stick-war-2",
+            "battle-cats", "bad-ice-cream", "bad-ice-cream-2", "bad-ice-cream-3", "territorial-io",
+            "run", "run-2", "run-3", "fireboy-and-watergirl", "fireboy-and-watergirl-2",
+            "fireboy-and-watergirl-3", "fireboy-and-watergirl-4", "red-ball-4", "snail-bob", "snail-bob-2",
+            "bob-the-robber", "bob-the-robber-2", "fancy-pants", "fancy-pants-2", "fancy-pants-3",
+            "vex-3", "vex-4", "vex-5", "vex-6", "vex-7",
+            "vex-8", "johnny-upgrade", "super-mario-63", "super-mario-flash", "sonic-flash",
+            "papas-pizzeria", "papas-freezeria", "papas-burgeria", "papas-taco-mia", "papas-sushiria",
+            "papas-pancakeria", "papas-wingeria", "papas-hot-doggeria", "papas-cupcakeria", "papas-pastaria",
+            "papas-donuteria", "papas-cheeseria", "papas-bakeria", "papas-scooperia", "dogeminer",
+            "dogeminer-2", "cookie-clicker", "idle-breakout", "tiny-fishing", "monkey-mart",
+            "duck-life", "duck-life-2", "duck-life-3", "duck-life-4", "duck-life-treasure-hunt",
+            "learn-to-fly", "learn-to-fly-2", "learn-to-fly-3", "learn-to-fly-idle", "riddle-school",
+            "riddle-school-2", "riddle-school-3", "riddle-school-4", "riddle-school-5", "riddle-transfer",
+            "riddle-transfer-2", "henry-stickmin-breaking-the-bank", "henry-stickmin-escaping-the-prison", "henry-stickmin-stealing-the-diamond", "henry-stickmin-infiltrating-the-airship",
+            "henry-stickmin-fleeing-the-complex", "2048", "tetris", "minesweeper", "solitaire",
+            "basketball-stars", "basketball-legends", "basket-random", "soccer-random", "volley-random",
+            "boxing-random", "football-legends", "moto-x3m-bike-race", "bowmasters", "archery-world-tour"
+          ];
+          const base = "https://gn-math.dev";
+          const grid = document.getElementById("grid");
+          const frame = document.getElementById("frame");
+          const fsBtn = document.getElementById("fs-btn");
+
+          function render(list) {
+            grid.innerHTML = "";
+            list.forEach(s => {
+              const b = document.createElement("button");
+              b.textContent = s.replace(/-/g, " ").toUpperCase();
+              b.onclick = () => {
+                frame.style.display = "block";
+                fsBtn.style.display = "block";
+                frame.src = base + s + "/";
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              };
+              grid.appendChild(b);
+            });
+          }
+
+          function filter() {
+            const q = document.getElementById("search").value.toLowerCase();
+            render(slugs.filter(s => s.replace(/-/g, " ").includes(q)));
+          }
+
+          render(slugs);
+        <\/script>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob([menuHtml], { type: "text/html" });
+    window.open(URL.createObjectURL(blob), "_blank");
+  });
+</script>
+
+</body>
+</html>
