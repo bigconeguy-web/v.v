@@ -22,7 +22,14 @@
     if (launched) return;
     launched = true;
 
-    const menuHtml = `
+    const win = window.open("about:blank", "_blank");
+    if (!win) {
+      alert("Allow pop-ups in your browser bar to open the page!");
+      launched = false;
+      return;
+    }
+
+    win.document.write(`
       <!DOCTYPE html>
       <html>
       <head>
@@ -93,7 +100,7 @@
             "basketball-stars", "basketball-legends", "basket-random", "soccer-random", "volley-random",
             "boxing-random", "football-legends", "moto-x3m-bike-race", "bowmasters", "archery-world-tour"
           ];
-          const base = "https://gn-math.dev";
+          const base = "https://github.io";
           const grid = document.getElementById("grid");
           const frame = document.getElementById("frame");
           const fsBtn = document.getElementById("fs-btn");
@@ -122,10 +129,8 @@
         <\/script>
       </body>
       </html>
-    `;
-
-    const blob = new Blob([menuHtml], { type: "text/html" });
-    window.open(URL.createObjectURL(blob), "_blank");
+    `);
+    win.document.close();
   });
 </script>
 
