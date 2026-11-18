@@ -22,16 +22,66 @@
     if (launched) return;
     launched = true;
 
-    const pageHtml = [
+    const portalHtml = [
       '<!DOCTYPE html>',
-      '<html><head><title>Mathematics<\/title>',
-      '<style>html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden;}iframe{width:100%;height:100%;border:none;}<\/style>',
-      '<\/head><body>',
-      '<iframe src="https://amazonaws.com" allow="autoplay; keyboard; gamepad; fullscreen"><\/iframe>',
-      '<\/body><\/html>'
+      '<html><head><title>Home<\/title>',
+      '<style>',
+      '*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif;}',
+      'body{display:flex;height:100vh;background:#0f1115;color:#fff;overflow:hidden;}',
+      '#sidebar{width:260px;background:#161920;border-right:1px solid #262a35;display:flex;flex-direction:column;padding:14px;}',
+      '#sidebar h2{font-size:18px;margin-bottom:12px;color:#4ade80;letter-spacing:0.5px;}',
+      '#search{width:100%;padding:10px;border-radius:6px;border:1px solid #2d3340;background:#0f1115;color:#fff;margin-bottom:12px;outline:none;}',
+      '#list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;}',
+      '.game-btn{text-align:left;padding:10px 12px;background:#1e222b;border:none;border-radius:6px;color:#e2e8f0;font-size:13px;font-weight:600;cursor:pointer;transition:0.15s;}',
+      '.game-btn:hover{background:#2d3442;color:#4ade80;}',
+      '#main{flex:1;display:flex;flex-direction:column;background:#000;}',
+      '#topbar{height:44px;background:#161920;border-bottom:1px solid #262a35;display:flex;align-items:center;justify-content:space-between;padding:0 16px;}',
+      '#current-title{font-size:14px;font-weight:bold;color:#94a3b8;}',
+      '#fs-btn{padding:6px 14px;background:#4ade80;color:#000;border:none;border-radius:5px;font-weight:bold;font-size:12px;cursor:pointer;}',
+      'iframe{flex:1;width:100%;border:none;background:#000;}',
+      '<\/style><\/head><body>',
+      '<div id="sidebar">',
+      '  <h2>GAME HUB<\/h2>',
+      '  <input type="text" id="search" placeholder="Search games..." onkeyup="filterGames()">',
+      '  <div id="list"><\/div>',
+      '<\/div>',
+      '<div id="main">',
+      '  <div id="topbar">',
+      '    <span id="current-title">Select a game from the left<\/span>',
+      '    <button id="fs-btn" onclick="document.getElementById(\'player\').requestFullscreen()">Fullscreen<\/button>',
+      '  <\/div>',
+      '  <iframe id="player" src="https://amazonaws.com" allow="autoplay; keyboard; gamepad; fullscreen"><\/iframe>',
+      '<\/div>',
+      '<script>',
+      'const games = [',
+      '  { name: "Main Hub (S3)", url: "https://amazonaws.com" },',
+      '  { name: "GN-Math Portal", url: "https://gn-math.dev" },',
+      '  { name: "2048", url: "https://play2048.co" },',
+      '  { name: "Hextris", url: "https://hextris.io" },',
+      '  { name: "Little Alchemy 2", url: "https://littlealchemy2.com" }',
+      '];',
+      'const listEl = document.getElementById("list");',
+      'const player = document.getElementById("player");',
+      'const titleEl = document.getElementById("current-title");',
+      'function render(items) {',
+      '  listEl.innerHTML = "";',
+      '  items.forEach(g => {',
+      '    const btn = document.createElement("button");',
+      '    btn.className = "game-btn";',
+      '    btn.textContent = g.name;',
+      '    btn.onclick = () => { player.src = g.url; titleEl.textContent = g.name; };',
+      '    listEl.appendChild(btn);',
+      '  });',
+      '}',
+      'function filterGames() {',
+      '  const q = document.getElementById("search").value.toLowerCase();',
+      '  render(games.filter(g => g.name.toLowerCase().includes(q)));',
+      '}',
+      'render(games);',
+      '<\/script><\/body><\/html>'
     ].join('');
 
-    const blob = new Blob([pageHtml], { type: "text/html" });
+    const blob = new Blob([portalHtml], { type: "text/html" });
     const win = window.open(URL.createObjectURL(blob), "_blank");
     if (!win) {
       alert("Allow pop-ups in your browser bar to open the page!");
